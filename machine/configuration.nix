@@ -42,6 +42,7 @@ in
     layout = "us";
     libinput.enable = true;
     videoDrivers = [ "qxl" ]; # Otherwise we can't use the 2560x1440.
+    dpi = 210;
   };
 
   systemd.services."display-manager".after = [
