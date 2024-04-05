@@ -71,5 +71,6 @@ in
     "-vga virtio"
     "-display gtk"
     "-device VGA,vgamem_mb=64"
+    "-full-screen" # Use Ctrl-Alt-F to exit fullscreen.
   ];
 }
