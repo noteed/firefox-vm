@@ -1,38 +1,35 @@
 { config, pkgs, ... }:
 
 {
-  # Enable the X server
-  services.xserver.enable = true;
-  services.xserver.displayManager.lightdm.enable = true;
-  services.xserver.desktopManager.xfce.enable = true;
+  # Enable X11 without a display manager, running Firefox directly
+  services.xserver = {
+    enable = true;
+    displayManager.defaultSession = "custom";
+    displayManager.session = [
+      {
+        manage = "desktop";
+        name = "custom";
+        start = ''
+          exec firefox --kiosk https://refli.be
+        '';
+      }
+    ];
+    displayManager.autoLogin = {
+      enable = true;
+      user = "user";
+    };
+  };
 
-  # Set up the user environment
+  # Set up user environment
   users.users.user = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # for sudo access
+    # extraGroups = [ "wheel" ]; # For sudo access
     password = "password";
   };
 
-  # Install firefox
+  # Add Firefox to system packages
   environment.systemPackages = with pkgs; [ firefox ];
 
-  # Autostart Firefox in fullscreen
-  services.xserver.displayManager.sessionCommands = ''
-    mkdir -p ~/.config/autostart
-    cat > ~/.config/autostart/firefox.desktop <<EOF
-    [Desktop Entry]
-    Type=Application
-    Exec=firefox --kiosk
-    Hidden=false
-    NoDisplay=false
-    X-GNOME-Autostart-enabled=true
-    Name[en_US]=Firefox
-    Name=Firefox
-    Comment[en_US]=Start Firefox in fullscreen mode
-    Comment=Start Firefox in fullscreen mode
-    EOF
-  '';
-
   # Allow user to run system commands without a password
-  security.sudo.wheelNeedsPassword = false;
+  # security.sudo.wheelNeedsPassword = false;
 }
