@@ -14,8 +14,10 @@ let
       --kiosk \
       --profile /home/user/.mozilla/firefox/vm/ \
       --remote-debugging-port 9222 \
-      https://refli.be/ &
+      https://refli.be/ 2>/tmp/firefox-debug.log &
   '';
+
+  firefox-control = pkgs.writeScriptBin "firefox-control" (builtins.readFile ../firefox-control.sh);
 
 in
 {
@@ -99,13 +101,19 @@ in
     password = "password";
   };
 
-  # Add Firefox to system packages
-  environment.systemPackages = with pkgs; [ firefox ];
+  # Add Firefox and control scripts to system packages
+  environment.systemPackages = with pkgs; [
+    curl
+    firefox
+    firefox-control
+    xdotool
+  ];
 
   # Allow user to run system commands without a password
   # security.sudo.wheelNeedsPassword = false;
 
   # Specify how to run QEMU
+  virtualisation.memorySize = 2048;
   virtualisation.resolution = {
     x = 2880;
     y = 1920;

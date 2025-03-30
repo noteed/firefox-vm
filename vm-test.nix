@@ -23,6 +23,16 @@ in nixpkgs.nixosTest {
     machine1.wait_for_unit("display-manager");
     machine1.wait_for_x();
     machine1.wait_for_text("Refli");
-    machine1.screenshot("screenshot");
+    machine1.screenshot("screenshot_initial");
+
+    machine1.succeed("firefox-control https://nixos.org")
+
+    machine1.wait_for_text("NixOS");
+    machine1.screenshot("screenshot_nixos");
+
+    machine1.succeed("firefox-control https://github.com")
+
+    machine1.wait_for_text("GitHub");
+    machine1.screenshot("screenshot_github");
   '';
-  }
+}
