@@ -2,12 +2,23 @@ This is an attempt at running Firefox in a NixOS VM. I've tried Playwright, but
 maybe a "real" Firefox will allow something more accurate (e.g. start Firefox
 with a configuration for high-dpi display).
 
+# Run the VM interactively
+
 ```
 $ scripts/runvm.sh
 ```
 
 Use Ctrl-Alt-F to exit the fullscreen mode, and use Ctrl-Alt-Q to quit QEMU
 (this doesn't work while in fullscreen).
+
+# Run the VM as a NixOS test
+
+Disabling the sandbox is necessary to allow the VM to have network access. The
+result contains a screenshot of the Refli web site.
+
+```
+$ nix-build --no-out-link vm-test.nix --option sandbox false
+```
 
 # Notes
 
