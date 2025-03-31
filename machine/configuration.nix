@@ -14,7 +14,7 @@ let
       --kiosk \
       --profile /home/user/.mozilla/firefox/vm/ \
       --remote-debugging-port 9222 \
-      https://refli.be/ 2>/tmp/firefox-debug.log &
+      127.0.0.1 2>/tmp/firefox-debug.log &
   '';
 
   firefox-control = pkgs.writeScriptBin "firefox-control" (builtins.readFile ../firefox-control.sh);

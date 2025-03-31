@@ -22,16 +22,20 @@ in nixpkgs.nixosTest {
     start_all();
     machine1.wait_for_unit("display-manager");
     machine1.wait_for_x();
-    machine1.wait_for_text("Refli");
+
+    # The initial URL is localhost, and we run nothing there.
+    machine1.wait_for_text("Unable to connect");
     machine1.screenshot("screenshot_initial");
 
-    machine1.succeed("firefox-control https://nixos.org")
+    machine1.succeed("firefox-control https://refli.be")
+    machine1.wait_for_text("Refli");
+    machine1.screenshot("screenshot_refli");
 
+    machine1.succeed("firefox-control https://nixos.org")
     machine1.wait_for_text("NixOS");
     machine1.screenshot("screenshot_nixos");
 
     machine1.succeed("firefox-control https://github.com")
-
     machine1.wait_for_text("GitHub");
     machine1.screenshot("screenshot_github");
   '';
