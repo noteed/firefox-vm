@@ -9,7 +9,7 @@ let
     ];
   };
 
-in nixpkgs.nixosTest {
+in nixpkgs.testers.nixosTest {
   name = "firefox-vm/text";
   enableOCR = true;
   nodes = {

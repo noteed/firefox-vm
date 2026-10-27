@@ -21,24 +21,10 @@ let
 
 in
 {
-  # Overlay to set custom autostart script for openbox
-  # From the answer at
-  # https://discourse.nixos.org/t/how-to-configure-nixos-for-kiosk-or-fullscreen-applications/21855/2
-  nixpkgs.overlays = with pkgs; [
-    (_self: super: {
-      openbox = super.openbox.overrideAttrs (_oldAttrs: rec {
-        postFixup = ''
-          ln -sf /etc/openbox/autostart $out/etc/xdg/openbox/autostart
-        '';
-      });
-    })
-  ];
-
   networking.firewall.allowedTCPPorts = [ 9222 ];
 
-  # By defining the script source outside of the overlay, we don't have to
-  # rebuild the package every time we change the startup script.
-  environment.etc."openbox/autostart".source = pkgs.writeScript "autostart" autostart;
+  # Openbox runs /etc/xdg/openbox/autostart at startup.
+  environment.etc."xdg/openbox/autostart".source = pkgs.writeScript "autostart" autostart;
 
   i18n.defaultLocale = "en_US.UTF-8";
   console.font = "ter-132n";
@@ -50,14 +36,8 @@ in
     enable = true;
     windowManager.openbox.enable = true;
     displayManager.lightdm.enable = true;
-    displayManager.defaultSession = "none+openbox";
-    displayManager.autoLogin = {
-      enable = true;
-      user = "user";
-    };
 
-    layout = "us";
-    libinput.enable = true;
+    xkb.layout = "us";
     videoDrivers = [ "qxl" ]; # Otherwise we can't use the 2560x1440.
     dpi = 256;
 
@@ -66,6 +46,14 @@ in
       Option "PreferredMode" "2880x1920_60.00"
     '';
   };
+
+  services.displayManager.defaultSession = "none+openbox";
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "user";
+  };
+
+  services.libinput.enable = true;
 
   # TODO The two Xcursor lines don't seem to work, but maybe I need to restart the session.
   # TODO Same for this line:
@@ -93,6 +81,10 @@ in
     "network-online.target"
     "systemd-resolved.service"
   ];
+  # Without this, the ordering above doesn't make systemd wait for the network.
+  systemd.services."display-manager".wants = [ "network-online.target" ];
+
+  system.stateVersion = "24.05";
 
   # Set up user environment
   users.users.user = {
